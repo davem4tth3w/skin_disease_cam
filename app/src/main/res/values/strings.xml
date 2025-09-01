@@ -1,0 +1,38 @@
+<resources>
+
+    <!-- Landing page-->
+    <string name="app_name">Skin Disease Cam</string>
+    <string name="app_logo_desc">skin icon</string>
+
+    <string name="app_description">Skin Disease Cam is an advanced mobile application designed
+        to assist users in identifying, classifying, and managing skin diseases.\n\n
+        Utilizing state-of-the-art image recognition technology, Skin Disease Cam allows users to
+        capture images of their skin conditions and receive potential classifications of
+        various disease types, providing valuable insights into their
+        symptoms.
+    </string>
+
+
+    <!--disclaimer dialog-->
+    <string name="disclaimer_header">Disclaimer</string>
+    <string name="disclaimer_text">
+    The information and recommendations provided by Skin Disease Cam are for informational purposes only.\n\n
+    They are not intended to replace professional medical advice. Always consult a healthcare professional or dermatologist for an accurate diagnosis and treatment plan.
+    </string>
+
+    <string name="understand_button">I Understand</string>
+
+
+
+    <!-- Welcome page-->
+    <string name="welcome_text">Welcome to Skin Disease Cam!</string>
+    <string name="getstarted_text">Get Started</string>
+    <string name="floating_section">floating section</string>
+
+
+    <!-- Cases page-->
+    <string name="cases_text">Cases</string>
+    <string name="add_case_btn">+</string>
+
+
+</resources>

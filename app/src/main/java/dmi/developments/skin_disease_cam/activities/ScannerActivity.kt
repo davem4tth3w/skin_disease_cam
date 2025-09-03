@@ -7,40 +7,33 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import dmi.developments.skin_disease_cam.R
-import dmi.developments.skin_disease_cam.data.database.AppDatabase
 import dmi.developments.skin_disease_cam.data.entity.ScanResult
-import dmi.developments.skin_disease_cam.data.repository.ScanRepository
 import dmi.developments.skin_disease_cam.viewmodel.ScanViewModel
-import dmi.developments.skin_disease_cam.viewmodel.ScanViewModelFactory
 import kotlinx.coroutines.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class ScannerActivity : AppCompatActivity() {
 
     private lateinit var previewView: PreviewView
     private var imageCapture: ImageCapture? = null
-    private lateinit var scanViewModel: ScanViewModel
+    private val scanViewModel: ScanViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.scanner)
 
         previewView = findViewById(R.id.previewView)
-
-        // Initialize ViewModel
-        val dao = AppDatabase.getDatabase(application).scanResultDao()
-        val repository = ScanRepository(dao)
-        val factory = ScanViewModelFactory(repository)
-        scanViewModel = ViewModelProvider(this, factory)[ScanViewModel::class.java]
 
         // Ask camera permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
@@ -52,12 +45,10 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
-    // Handle camera permission result
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                startCamera()
-            } else {
+            if (isGranted) startCamera()
+            else {
                 Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
                 finish()
             }
@@ -65,10 +56,8 @@ class ScannerActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(previewView.surfaceProvider)
             }
@@ -77,15 +66,12 @@ class ScannerActivity : AppCompatActivity() {
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .build()
 
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
+                    this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture
                 )
 
-                // Wait 5 seconds then capture image
                 GlobalScope.launch(Dispatchers.Main) {
                     delay(5000)
                     captureImage()
@@ -94,7 +80,6 @@ class ScannerActivity : AppCompatActivity() {
             } catch (exc: Exception) {
                 Log.e("ScannerActivity", "Camera binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -107,28 +92,18 @@ class ScannerActivity : AppCompatActivity() {
         )
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val imagePath = photoFile.absolutePath
-                    Log.d("ScannerActivity", "Photo saved: $imagePath")
-
-                    // Save record to Room database
                     val scan = ScanResult(
-                        imagePath = imagePath,
-                        diagnosis = null, // null for now
+                        imagePath = photoFile.absolutePath,
+                        diagnosis = null,
                         timestamp = System.currentTimeMillis()
                     )
                     scanViewModel.addScan(scan)
-
-                    Toast.makeText(
-                        this@ScannerActivity,
-                        "Image captured and saved!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@ScannerActivity, "Image captured and saved!", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onError(exc: ImageCaptureException) {

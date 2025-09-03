@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    id("dagger.hilt.android.plugin")
 
 }
 
@@ -71,5 +72,9 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+
+    // Hilt dependencies
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
 }

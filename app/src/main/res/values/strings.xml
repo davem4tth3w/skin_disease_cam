@@ -20,7 +20,11 @@
     They are not intended to replace professional medical advice. Always consult a healthcare professional or dermatologist for an accurate diagnosis and treatment plan.
     </string>
 
-    <string name="understand_button">I Understand</string>
+    <string name="understand_button">I understand</string>
+
+
+    <!--scanner-->
+    <string name="align">Align inside the box</string>
 
 
 
@@ -30,9 +34,9 @@
     <string name="floating_section">floating section</string>
 
 
-    <!-- Cases page-->
-    <string name="cases_text">Cases</string>
-    <string name="add_case_btn">+</string>
+    <!-- Records page-->
+    <string name="rec_text">Records</string>
+    <string name="add_rec_btn">+</string>
 
 
 </resources>

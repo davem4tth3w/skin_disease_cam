@@ -7,6 +7,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dmi.developments.skin_disease_cam.R
+import android.content.Intent
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,9 @@ class MainActivity : AppCompatActivity() {
         val understandButton: Button? = bottomSheetDialog.findViewById(R.id.understand_button)
         understandButton?.setOnClickListener {
             bottomSheetDialog.dismiss()
+
+            val intent = Intent(this, ScannerActivity::class.java)
+            startActivity(intent)
         }
 
         bottomSheetDialog.show()

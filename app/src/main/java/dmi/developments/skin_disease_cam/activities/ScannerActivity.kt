@@ -1,6 +1,8 @@
 package dmi.developments.skin_disease_cam.activities
 
 import android.Manifest
+import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
@@ -13,11 +15,14 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.airbnb.lottie.LottieAnimationView
 import dagger.hilt.android.AndroidEntryPoint
 import dmi.developments.skin_disease_cam.R
 import dmi.developments.skin_disease_cam.data.entity.ScanResult
 import dmi.developments.skin_disease_cam.viewmodel.ScanViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,6 +33,7 @@ class ScannerActivity : AppCompatActivity() {
     private lateinit var previewView: PreviewView
     private var imageCapture: ImageCapture? = null
     private val scanViewModel: ScanViewModel by viewModels()
+    private var loadingDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +78,7 @@ class ScannerActivity : AppCompatActivity() {
                     this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture
                 )
 
-                GlobalScope.launch(Dispatchers.Main) {
+                lifecycleScope.launch {
                     delay(5000)
                     captureImage()
                 }
@@ -103,7 +109,20 @@ class ScannerActivity : AppCompatActivity() {
                         timestamp = System.currentTimeMillis()
                     )
                     scanViewModel.addScan(scan)
-                    Toast.makeText(this@ScannerActivity, "Image captured and saved!", Toast.LENGTH_SHORT).show()
+
+                    // Show loading animation
+                    showLoadingDialog()
+
+                    lifecycleScope.launch {
+                        delay(3000) // show animation for 3 sec
+                        hideLoadingDialog()
+
+                        // Redirect to ResultsActivity
+                        val intent = Intent(this@ScannerActivity, ResultsActivity::class.java)
+                        intent.putExtra("imagePath", photoFile.absolutePath)
+                        startActivity(intent)
+                        finish()
+                    }
                 }
 
                 override fun onError(exc: ImageCaptureException) {
@@ -111,5 +130,20 @@ class ScannerActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun showLoadingDialog() {
+        loadingDialog = Dialog(this).apply {
+            setContentView(R.layout.loading_dialog)
+            setCancelable(false)
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+            val animView = findViewById<LottieAnimationView>(R.id.loadingAnim)
+            animView.playAnimation()
+            show()
+        }
+    }
+
+    private fun hideLoadingDialog() {
+        loadingDialog?.dismiss()
     }
 }

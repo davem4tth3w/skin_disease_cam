@@ -25,14 +25,12 @@
 
     <!--scanner-->
     <string name="align">Align inside the box</string>
-
-
     <string name="skin_disease_name">[Skin Disease]</string>
-
     <string name="remedies">Remedies :</string>
 
     <!--results-->
     <string name="img_prev">img preview</string>
+    <string name="scan_again_txt">Scan Again</string>
 
 
 

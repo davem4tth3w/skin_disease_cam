@@ -103,10 +103,14 @@ class ScannerActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val formatter = SimpleDateFormat("MMM/dd/yyyy hh:mm a", Locale.getDefault())
+                    val formattedDate = formatter.format(Date())
+
                     val scan = ScanResult(
                         imagePath = photoFile.absolutePath,
-                        diagnosis = null,
-                        timestamp = System.currentTimeMillis()
+                        skindisease = null,
+                        remedies = null,
+                        timestamp = formattedDate
                     )
                     scanViewModel.addScan(scan)
 
@@ -114,16 +118,16 @@ class ScannerActivity : AppCompatActivity() {
                     showLoadingDialog()
 
                     lifecycleScope.launch {
-                        delay(3000) // show animation for 3 sec
+                        delay(3000)
                         hideLoadingDialog()
 
-                        // Redirect to ResultsActivity
                         val intent = Intent(this@ScannerActivity, ResultsActivity::class.java)
                         intent.putExtra("imagePath", photoFile.absolutePath)
                         startActivity(intent)
                         finish()
                     }
                 }
+
 
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("ScannerActivity", "Image capture failed: ${exc.message}", exc)

@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class ScanResult(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val imagePath: String,
-    val diagnosis: String? = null,
-    val timestamp: Long
+    val skindisease: String? = null,
+    val remedies: String? = null,
+    val timestamp: String
 )

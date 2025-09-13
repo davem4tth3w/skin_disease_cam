@@ -57,7 +57,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/scan_again_btn"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -72,7 +72,7 @@
         app:layout_constraintVertical_bias="0.466" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/view_rec_btn"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

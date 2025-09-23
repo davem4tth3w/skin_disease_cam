@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import dmi.developments.skin_disease_cam.R
 
@@ -14,13 +15,25 @@ class ResultsActivity : AppCompatActivity() {
         setContentView(R.layout.results)
 
         val imageView = findViewById<ImageView>(R.id.imageView)
-        val imagePath = intent.getStringExtra("imagePath")
+        val skinDiseaseTextView = findViewById<TextView>(R.id.skin_disease_name)
+        val remediesTextView = findViewById<TextView>(R.id.remedies)
 
+        // Get data passed from ScannerActivity
+        val imagePath = intent.getStringExtra("imagePath")
+        val skindisease = intent.getStringExtra("skindisease") ?: "Unknown"
+        val remedies = intent.getStringExtra("remedies") ?: "No remedies found"
+
+        // Show image preview
         if (imagePath != null) {
             val bitmap = BitmapFactory.decodeFile(imagePath)
             imageView.setImageBitmap(bitmap)
         }
 
+        // Display skindisease & remedies
+        skinDiseaseTextView.text = skindisease
+        remediesTextView.text = remedies
+
+        // Scan again button
         val scanAgainBtn = findViewById<Button>(R.id.scan_again_btn)
         scanAgainBtn.setOnClickListener {
             val intent = Intent(this, ScannerActivity::class.java)

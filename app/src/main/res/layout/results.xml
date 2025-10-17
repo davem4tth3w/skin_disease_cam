@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/preview_img"
         android:layout_width="352dp"
         android:layout_height="352dp"
         android:contentDescription="@string/img_prev"

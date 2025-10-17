@@ -19,3 +19,22 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ------------------------------------------
+# TensorFlow Lite ProGuard rules
+# ------------------------------------------
+
+# Keep all TensorFlow Lite core classes
+-keep class org.tensorflow.lite.** { *; }
+
+# Keep TensorFlow Lite Support Library classes
+-keep class org.tensorflow.lite.support.** { *; }
+
+# Keep TensorFlow Lite GPU delegate classes
+-keep class org.tensorflow.lite.gpu.** { *; }
+
+# Optional: Preserve model metadata parsing (used by some TFLite utils)
+-keep class org.tensorflow.lite.schema.** { *; }
+
+# Optional: Keep annotations used by TensorFlow Lite
+-keepattributes *Annotation*

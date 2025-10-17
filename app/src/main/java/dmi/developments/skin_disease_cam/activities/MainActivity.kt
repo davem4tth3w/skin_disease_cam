@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         understandButton?.setOnClickListener {
             bottomSheetDialog.dismiss()
 
-            val intent = Intent(this, ScannerActivity::class.java)
+            val intent = Intent(this, CameraActivity::class.java)
             startActivity(intent)
         }
 

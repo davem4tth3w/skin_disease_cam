@@ -30,9 +30,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.ScannerActivity" />
+        <activity android:name=".activities.CameraActivity" />
 
         <activity android:name=".activities.ResultsActivity" />
+
+        <activity android:name=".activities.PreviewImageActivity" />
+
     </application>
 
 </manifest>

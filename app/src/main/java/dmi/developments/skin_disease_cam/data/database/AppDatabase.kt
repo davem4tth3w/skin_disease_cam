@@ -2,12 +2,12 @@ package dmi.developments.skin_disease_cam.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import dmi.developments.skin_disease_cam.data.dao.ScanResultDao
-import dmi.developments.skin_disease_cam.data.entity.ScanResult
+import dmi.developments.skin_disease_cam.data.dao.ResultDao
+import dmi.developments.skin_disease_cam.data.entity.Result
 
-@Database(entities = [ScanResult::class], version = 1)
+@Database(entities = [Result::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun scanResultDao(): ScanResultDao
+    abstract fun ResultDao(): ResultDao
 
     companion object {
         @Volatile

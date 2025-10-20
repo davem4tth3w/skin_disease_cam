@@ -3,7 +3,7 @@ package dmi.developments.skin_disease_cam.di
 import android.content.Context
 import androidx.room.Room
 import dmi.developments.skin_disease_cam.data.database.AppDatabase
-import dmi.developments.skin_disease_cam.data.repository.ScanRepository
+import dmi.developments.skin_disease_cam.data.repository.ResultRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,10 +26,10 @@ object AppModule {
     }
 
     @Provides
-    fun provideScanResultDao(db: AppDatabase) = db.scanResultDao()
+    fun provideResultDao(db: AppDatabase) = db.ResultDao()
 
     @Provides
-    fun provideScanRepository(dao: dmi.developments.skin_disease_cam.data.dao.ScanResultDao): ScanRepository {
-        return ScanRepository(dao)
+    fun provideResultRepository(dao: dmi.developments.skin_disease_cam.data.dao.ResultDao): ResultRepository {
+        return ResultRepository(dao)
     }
 }

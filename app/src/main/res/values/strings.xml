@@ -34,7 +34,7 @@
     <!--results-->
     <string name="skin_disease_name">skin disease name</string>
     <string name="img_prev">img preview</string>
-    <string name="scan_again_txt">Scan Again</string>
+    <string name="camera_txt">Camera</string>
     <string name="remedies">remedies</string>
 
 

@@ -15,7 +15,7 @@
 
     <View
         android:id="@+id/focusFrame"
-        android:layout_width="175dp"
+        android:layout_width="210dp"
         android:layout_height="210dp"
         android:background="@drawable/focus_frame"
         app:layout_constraintBottom_toBottomOf="parent"

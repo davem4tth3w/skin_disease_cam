@@ -6,7 +6,6 @@ import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
@@ -15,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
 import android.util.Log
-import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dmi.developments.skin_disease_cam.R
 import dmi.developments.skin_disease_cam.data.entity.Result
@@ -34,7 +32,6 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
 import java.util.*
-import java.io.BufferedReader
 
 @AndroidEntryPoint
 class PreviewImageActivity : AppCompatActivity() {
@@ -46,7 +43,7 @@ class PreviewImageActivity : AppCompatActivity() {
     private var cachedLabels: List<String> = emptyList()
     private var modelLoaded = false
 
-    private val modelPath = "model/mobilenet_v2_px160_aug_light_dynamic.tflite"
+    private val modelPath = "mobilenet_v2_px160_aug_light_dynamic.tflite"
     private val labelsPath = "labels.txt"
     private val imageSize = 160
 
@@ -91,7 +88,6 @@ class PreviewImageActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ Load image and correct its orientation
     private fun loadBitmapWithCorrectOrientation(uri: Uri): Bitmap {
         val inputStream = contentResolver.openInputStream(uri)
             ?: throw Exception("Cannot open image input stream")

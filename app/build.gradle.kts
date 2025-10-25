@@ -98,8 +98,16 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     //TensorFlow Lite dependencies
-    implementation("org.tensorflow:tensorflow-lite:2.15.0")
-    implementation("org.tensorflow:tensorflow-lite-gpu:2.15.0")
+    implementation("org.tensorflow:tensorflow-lite:2.17.0")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
+
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+}
+
+
+// Prevent duplicate TensorFlow definitions
+configurations.all {
+    exclude(group = "com.google.ai.edge.litert", module = "litert-api")
 }

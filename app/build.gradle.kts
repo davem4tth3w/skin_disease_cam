@@ -41,20 +41,21 @@ android {
         viewBinding = true
     }
 
-    packagingOptions {
-        resources.excludes.add("META-INF/LICENSE*")
-        resources.excludes.add("META-INF/NOTICE*")
-        resources.pickFirsts.add("META-INF/*")
-
-        // Use this syntax for older or strict AGP versions
-        jniLibs.keepDebugSymbols.add("*.so")
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE*"
+            excludes += "META-INF/NOTICE*"
+            pickFirsts += "META-INF/*"
+        }
+        jniLibs {
+            keepDebugSymbols += "*.so"
+        }
     }
 
-    aaptOptions {
-        // This is the correct way to disable compression for .tflite models
-        noCompress("tflite", "lite")
-    }
 
+    androidResources {
+        noCompress += listOf("tflite", "lite")
+    }
 
 }
 

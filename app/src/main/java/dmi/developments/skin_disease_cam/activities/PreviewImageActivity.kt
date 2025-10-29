@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -43,9 +44,9 @@ class PreviewImageActivity : AppCompatActivity() {
     private var cachedLabels: List<String> = emptyList()
     private var modelLoaded = false
 
-    private val modelPath = "mobilenet_v2_px160_aug_light_dynamic.tflite"
+    private val modelPath = "inception_v3_px224_aug_light_dynamic.tflite"
     private val labelsPath = "labels.txt"
-    private val imageSize = 160
+    private val imageSize = 224
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +116,6 @@ class PreviewImageActivity : AppCompatActivity() {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
-    // ✅ Crop to focus frame dimensions
     private fun cropToFocusFrame(bitmap: Bitmap): Bitmap {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
@@ -245,11 +245,14 @@ class PreviewImageActivity : AppCompatActivity() {
             // Build processor (resize + normalization)
             val imageProcessor = ImageProcessor.Builder()
                 .add(ResizeOp(imageSize, imageSize, ResizeOp.ResizeMethod.BILINEAR))
-                .add(NormalizeOp(0f, 255f))
+                .add(NormalizeOp(0f, 1f)) // keep this only for float32 model
                 .build()
 
-            var tensorImage = TensorImage.fromBitmap(processedBitmap)
+            // Load image as FLOAT32 tensor
+            var tensorImage = TensorImage(DataType.FLOAT32)
+            tensorImage.load(processedBitmap)
             tensorImage = imageProcessor.process(tensorImage)
+
 
 
             // Prepare output - ensure size matches labels count
@@ -319,22 +322,48 @@ class PreviewImageActivity : AppCompatActivity() {
 
 
     private fun sharpenBitmap(bitmap: Bitmap): Bitmap {
-        val kernel = floatArrayOf(
-            0f, -1f, 0f,
-            -1f, 5f, -1f,
-            0f, -1f, 0f
-        )
-        val convolution = ColorMatrixColorFilter(ColorMatrix().apply { set(kernel) })
-        val paint = Paint().apply { colorFilter = convolution }
+        val width = bitmap.width
+        val height = bitmap.height
+        val result = Bitmap.createBitmap(width, height, bitmap.config ?: Bitmap.Config.ARGB_8888)
 
-        val result = Bitmap.createBitmap(
-            bitmap.width,
-            bitmap.height,
-            bitmap.config ?: Bitmap.Config.ARGB_8888
+        // Sharpen kernel
+        val kernel = arrayOf(
+            floatArrayOf(0f, -1f, 0f),
+            floatArrayOf(-1f, 5f, -1f),
+            floatArrayOf(0f, -1f, 0f)
         )
-        Canvas(result).drawBitmap(bitmap, 0f, 0f, paint)
+
+        val pixels = IntArray(width * height)
+        val output = IntArray(width * height)
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        for (y in 1 until height - 1) {
+            for (x in 1 until width - 1) {
+                var rSum = 0f
+                var gSum = 0f
+                var bSum = 0f
+
+                for (ky in -1..1) {
+                    for (kx in -1..1) {
+                        val pixel = pixels[(x + kx) + (y + ky) * width]
+                        val factor = kernel[ky + 1][kx + 1]
+                        rSum += ((pixel shr 16) and 0xFF) * factor
+                        gSum += ((pixel shr 8) and 0xFF) * factor
+                        bSum += (pixel and 0xFF) * factor
+                    }
+                }
+
+                val r = rSum.coerceIn(0f, 255f).toInt()
+                val g = gSum.coerceIn(0f, 255f).toInt()
+                val b = bSum.coerceIn(0f, 255f).toInt()
+                output[x + y * width] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
+            }
+        }
+
+        result.setPixels(output, 0, width, 0, 0, width, height)
         return result
     }
+
 
 
     // Load labels (unchanged but with extra logs)

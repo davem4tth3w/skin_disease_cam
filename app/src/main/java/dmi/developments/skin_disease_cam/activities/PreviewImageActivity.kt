@@ -242,17 +242,14 @@ class PreviewImageActivity : AppCompatActivity() {
             //Preprocess: contrast + sharpening
             val processedBitmap = sharpenBitmap(enhanceBitmapContrast(bitmap))
 
-            // Build processor (resize + normalization)
+            //normalization
             val imageProcessor = ImageProcessor.Builder()
-                .add(ResizeOp(imageSize, imageSize, ResizeOp.ResizeMethod.BILINEAR))
-                .add(NormalizeOp(0f, 1f)) // keep this only for float32 model
+                .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
                 .build()
 
-            // Load image as FLOAT32 tensor
             var tensorImage = TensorImage(DataType.FLOAT32)
             tensorImage.load(processedBitmap)
             tensorImage = imageProcessor.process(tensorImage)
-
 
 
             // Prepare output - ensure size matches labels count
@@ -262,16 +259,23 @@ class PreviewImageActivity : AppCompatActivity() {
             cachedInterpreter!!.run(tensorImage.buffer, outputArray)
 
             val scores = outputArray[0]
-            // Defensive: if scores length mismatches labels, handle it
             if (scores.size != cachedLabels.size) {
                 Log.e("PreviewImageActivity", "Score size (${scores.size}) != labels size (${cachedLabels.size})")
                 return "Unknown"
             }
 
+            //Apply confidence threshold
             val maxIdx = scores.indices.maxByOrNull { scores[it] } ?: 0
-            val predicted = if (maxIdx in cachedLabels.indices) cachedLabels[maxIdx] else "Unknown"
-            Log.d("PreviewImageActivity", "Predicted: $predicted (index $maxIdx) - scores: ${scores.joinToString(",")}")
+            val confidence = scores[maxIdx]
+            val predicted = if (confidence >= 0.8f && maxIdx in cachedLabels.indices) {
+                cachedLabels[maxIdx]
+            } else {
+                "Uncertain"
+            }
+
+            Log.d("PreviewImageActivity", "Predicted: $predicted (confidence=$confidence) - scores: ${scores.joinToString(",")}")
             return predicted
+
         } catch (e: Exception) {
             Log.e("PreviewImageActivity", "classifyImage exception", e)
             return "Unknown"
